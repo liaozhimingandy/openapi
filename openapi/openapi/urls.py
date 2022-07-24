@@ -14,12 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 # api信息配置
+from rest_framework.routers import DefaultRouter
+
 schema_view = get_schema_view(
    openapi.Info(
       title="api文档",
@@ -33,9 +35,13 @@ schema_view = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
+# api根路由
+router = DefaultRouter()
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    re_path('^api/', include(router.urls)),
 ]
